@@ -111,7 +111,7 @@ if not st.session_state.logged_in:
                     else:
                         st.error("❌ Username หรือ Password ไม่ถูกต้อง!")
                         
-            st.info("💡 **Account ทดสอบ:**\n- **พนักงาน:** `user` / `1234`\n- **ช่าง:** `admin` / `1234`")
+           
 
     with tab2:
         col1, col2, col3 = st.columns([1, 2, 1])
