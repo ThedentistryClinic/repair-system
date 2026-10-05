@@ -1,0 +1,5 @@
+
+reflex==0.9.12
+
+streamlit
+requests
