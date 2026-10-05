@@ -10,14 +10,21 @@ st.set_page_config(page_title="ระบบแจ้งซ่อมออนไ�
 if not os.path.exists("uploads"):
     os.makedirs("uploads")
 
-# --- ตั้งค่า LINE Messaging API ---
-LINE_CHANNEL_ACCESS_TOKEN = "ofPoijMvVBoLRnT8hfl5p7EmJUJtNacpSkJDTK3FeZPQMuHpTjWyXvcfSuwEOyfvlD4dZ83SoiWP642gwLO06kjySJJxbu9Tu5KT6jYM6JXjPzAxa+Jr5mGoq9vwqhOqhdDDf5FN2obie7O8fvKDtQdB04t89/1O/w1cDnyilFU="
-LINE_TO_TARGET_ID = "U556cf026d1abbb03baa3831f15a5b1ec"
+# --- ดึงค่า LINE Messaging API จาก Streamlit Secrets ---
+try:
+    LINE_CHANNEL_ACCESS_TOKEN = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
+    # เผื่อเก็บ Target ID (User ID หรือ Group ID) ไว้ใน secrets ด้วย หรือกำหนดค่าตายตัวไว้ด้านล่างนี้ได้ครับ
+    LINE_TO_TARGET_ID = st.secrets.get("LINE_TO_TARGET_ID", "U556cf026d1abbb03baa3831f15a5b1ec") 
+except Exception:
+    # ค่าสำรองสำหรับรันเทสต์บนเครื่องคอมพิวเตอร์ตัวเอง (Localhost)
+    LINE_CHANNEL_ACCESS_TOKEN = "LOCAL_TEST_TOKEN"
+    LINE_TO_TARGET_ID = "U556cf026d1abbb03baa3831f15a5b1ec"
 
 def send_line_message(message):
     """ฟังก์ชันสำหรับส่งข้อความแจ้งเตือนผ่าน LINE Messaging API"""
-    if LINE_CHANNEL_ACCESS_TOKEN == "ofPoijMvVBoLRnT8hfl5p7EmJUJtNacpSkJDTK3FeZPQMuHpTjWyXvcfSuwEOyfvlD4dZ83SoiWP642gwLO06kjySJJxbu9Tu5KT6jYM6JXjPzAxa+Jr5mGoq9vwqhOqhdDDf5FN2obie7O8fvKDtQdB04t89/1O/w1cDnyilFU=":
-        return # ถ้ายังไม่ได้ใส่ Token ข้ามไปก่อนเพื่อไม่ให้ติด Error
+    if LINE_CHANNEL_ACCESS_TOKEN == "LOCAL_TEST_TOKEN":
+        print("LINE notification skipped (Local test mode without secret)")
+        return
     
     url = "https://api.line.me/v2/bot/message/push"
     headers = {
@@ -110,8 +117,6 @@ if not st.session_state.logged_in:
                         st.rerun()
                     else:
                         st.error("❌ Username หรือ Password ไม่ถูกต้อง!")
-                        
-           
 
     with tab2:
         col1, col2, col3 = st.columns([1, 2, 1])
