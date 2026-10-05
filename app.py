@@ -117,10 +117,10 @@ if not st.session_state.logged_in:
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             with st.form("register_form"):
-                reg_name = st.text_input("ชื่อ-นามสกุลจริง", placeholder="เช่น วีระชัย ใจดี")
-                reg_user = st.text_input("กำหนด Username", placeholder="เช่น weerachai")
+                reg_name = st.text_input("ชื่อ-นามสกุลจริง", placeholder="")
+                reg_user = st.text_input("กำหนด Username", placeholder="")
                 reg_pass = st.text_input("กำหนด Password", type="password", placeholder="••••••")
-                reg_role_choice = st.selectbox("ประเภทผู้ใช้งาน", ["พนักงานทั่วไป (User)", "ช่างซ่อมบำรุง (Technician)"])
+                reg_role_choice = st.selectbox("ประเภทผู้ใช้งาน", ["พนักงานทั่วไป (User)", "IT (Technician)"])
                 
                 submit_reg = st.form_submit_button("ลงทะเบียน", use_container_width=True)
                 
