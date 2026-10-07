@@ -308,7 +308,7 @@ else:
                             <p class="text-sm text-slate-600"><strong>💻 อุปกรณ์:</strong> {row[3]} ({row[4]})</p>
                             <p class="text-sm text-slate-600 mt-1"><strong>📝 อาการ:</strong> {row[5]}</p>
                         </div>
-                    """, unsafe_allow_html, )
+                    
                     
                     img_col = row[6] if len(row) > 6 else ""
                     if img_col and os.path.exists(img_col):
