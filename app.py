@@ -6,25 +6,35 @@ import requests
 # ตั้งค่าหน้าเว็บ
 st.set_page_config(page_title="ระบบแจ้งซ่อมออนไลน์", page_icon="🛠️", layout="centered")
 
+# --- แทรก Tailwind CSS ผ่าน CDN เพื่อความสวยงามพรีเมียม ---
+st.markdown("""
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ปรับแต่งฟอนต์และกล่องข้อความให้เข้ากับ Tailwind */
+        .stTextInput input, .stTextArea textarea, .stSelectbox select {
+            border-radius: 0.5rem !important;
+            border-color: #cbd5e1 !important;
+        }
+        .stButton button {
+            border-radius: 0.5rem !important;
+            font-weight: 600 !important;
+            transition: all 0.2s;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # สร้างโฟลเดอร์เก็บรูปภาพถ้ายังไม่มี
 if not os.path.exists("uploads"):
     os.makedirs("uploads")
 
-# --- ดึงค่า LINE Messaging API จาก Streamlit Secrets ---
-try:
-    LINE_CHANNEL_ACCESS_TOKEN = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
-    # เผื่อเก็บ Target ID (User ID หรือ Group ID) ไว้ใน secrets ด้วย หรือกำหนดค่าตายตัวไว้ด้านล่างนี้ได้ครับ
-    LINE_TO_TARGET_ID = st.secrets.get("LINE_TO_TARGET_ID", "U556cf026d1abbb03baa3831f15a5b1ec") 
-except Exception:
-    # ค่าสำรองสำหรับรันเทสต์บนเครื่องคอมพิวเตอร์ตัวเอง (Localhost)
-    LINE_CHANNEL_ACCESS_TOKEN = "LOCAL_TEST_TOKEN"
-    LINE_TO_TARGET_ID = "U556cf026d1abbb03baa3831f15a5b1ec"
+# --- ตั้งค่า LINE Messaging API ---
+LINE_CHANNEL_ACCESS_TOKEN = "ofPoijMvVBoLRnT8hfl5p7EmJUJtNacpSkJDTK3FeZPQMuHpTjWyXvcfSuwEOyfvlD4dZ83SoiWP642gwLO06kjySJJxbu9Tu5KT6jYM6JXjPzAxa+Jr5mGoq9vwqhOqhdDDf5FN2obie7O8fvKDtQdB04t89/1O/w1cDnyilFU="[cite: 7]
+LINE_TO_TARGET_ID = "U556cf026d1abbb03baa3831f15a5b1ec"[cite: 7]
 
 def send_line_message(message):
     """ฟังก์ชันสำหรับส่งข้อความแจ้งเตือนผ่าน LINE Messaging API"""
-    if LINE_CHANNEL_ACCESS_TOKEN == "LOCAL_TEST_TOKEN":
-        print("LINE notification skipped (Local test mode without secret)")
-        return
+    if LINE_CHANNEL_ACCESS_TOKEN == "ofPoijMvVBoLRnT8hfl5p7EmJUJtNacpSkJDTK3FeZPQMuHpTjWyXvcfSuwEOyfvlD4dZ83SoiWP642gwLO06kjySJJxbu9Tu5KT6jYM6JXjPzAxa+Jr5mGoq9vwqhOqhdDDf5FN2obie7O8fvKDtQdB04t89/1O/w1cDnyilFU=":
+        return # ถ้ายังไม่ได้ใส่ Token ข้ามไปก่อนเพื่อไม่ให้ติด Error
     
     url = "https://api.line.me/v2/bot/message/push"
     headers = {
@@ -90,7 +100,12 @@ if "logged_in" not in st.session_state:
 
 # --- 3. หน้าจอ Login และ Register ---
 if not st.session_state.logged_in:
-    st.markdown("<h2 style='text-align: center; color: #1e293b;'>🛠️ ระบบแจ้งซ่อมออนไลน์</h2>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="text-center py-6">
+            <h1 class="text-3xl font-extrabold text-slate-800">🛠️ ระบบแจ้งซ่อมออนไลน์</h1>
+            <p class="text-slate-500 mt-2">แจ้งปัญหาอุปกรณ์ IT ภายในองค์กรได้อย่างรวดเร็วและแม่นยำ</p>
+        </div>
+    """, unsafe_allow_html=True)
     
     tab1, tab2 = st.tabs(["🔐 เข้าสู่ระบบ", "📝 สมัครสมาชิกใหม่"])
     
@@ -117,15 +132,23 @@ if not st.session_state.logged_in:
                         st.rerun()
                     else:
                         st.error("❌ Username หรือ Password ไม่ถูกต้อง!")
+                        
+            st.markdown("""
+                <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl mt-4 text-sm text-slate-700">
+                    <p class="font-bold text-blue-900 mb-1">💡 Account ทดสอบระบบ:</p>
+                    <p>• <strong>พนักงาน:</strong> <code>user</code> / <code>1234</code></p>
+                    <p>• <strong>ช่าง:</strong> <code>admin</code> / <code>1234</code></p>
+                </div>
+            """, unsafe_allow_html=True)
 
     with tab2:
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             with st.form("register_form"):
-                reg_name = st.text_input("ชื่อ-นามสกุลจริง", placeholder="")
-                reg_user = st.text_input("กำหนด Username", placeholder="")
+                reg_name = st.text_input("ชื่อ-นามสกุลจริง", placeholder="เช่น วีระชัย ใจดี")
+                reg_user = st.text_input("กำหนด Username", placeholder="เช่น weerachai")
                 reg_pass = st.text_input("กำหนด Password", type="password", placeholder="••••••")
-                reg_role_choice = st.selectbox("ประเภทผู้ใช้งาน", ["พนักงานทั่วไป (User)", "IT (Technician)"])
+                reg_role_choice = st.selectbox("ประเภทผู้ใช้งาน", ["พนักงานทั่วไป (User)", "ช่างซ่อมบำรุง (Technician)"])
                 
                 submit_reg = st.form_submit_button("ลงทะเบียน", use_container_width=True)
                 
@@ -148,9 +171,13 @@ if not st.session_state.logged_in:
 
 # --- 4. หน้าจอหลัง Login สำเร็จ ---
 else:
-    st.sidebar.title(f"👋 ยินดีต้อนรับ")
-    st.sidebar.write(f"**ผู้ใช้งาน:** {st.session_state.name}")
-    st.sidebar.write(f"**สิทธิ์:** `{st.session_state.role.upper()}`")
+    st.sidebar.markdown(f"""
+        <div class="bg-slate-100 p-4 rounded-xl mb-4 text-center border border-slate-200">
+            <p class="text-xs text-slate-500 uppercase tracking-wider">ผู้ใช้งานระบบ</p>
+            <p class="text-lg font-bold text-slate-800">{st.session_state.name}</p>
+            <span class="inline-block bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full mt-1 font-semibold">{st.session_state.role.upper()}</span>
+        </div>
+    """, unsafe_allow_html=True)
     
     if st.sidebar.button("🚪 ออกจากระบบ", use_container_width=True):
         st.session_state.logged_in = False
@@ -160,8 +187,12 @@ else:
 
     # --- กรณีที่เป็น User ทั่วไป (หน้าแจ้งซ่อม) ---
     if st.session_state.role == "user":
-        st.markdown("<h2 style='color: #1e293b;'>🛠️ ระบบแจ้งซ่อมออนไลน์ (สำหรับพนักงาน)</h2>", unsafe_allow_html=True)
-        st.divider()
+        st.markdown("""
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">🛠️ ส่งเรื่องแจ้งซ่อมอุปกรณ์</h2>
+                <p class="text-slate-500">กรอกรายละเอียดข้อมูลอุปกรณ์ที่ชำรุดเพื่อให้ทีมช่างเข้าตรวจสอบ</p>
+            </div>
+        """, unsafe_allow_html=True)
         
         with st.form("repair_form", clear_on_submit=True):
             branch_list = [
@@ -219,7 +250,7 @@ else:
                     st.rerun()
 
         st.divider()
-        st.subheader("📋 ประวัติการแจ้งซ่อมของคุณ")
+        st.markdown("<h3 class='text-xl font-bold text-slate-800 mb-4'>📋 ประวัติการแจ้งซ่อมของคุณ</h3>", unsafe_allow_html=True)
         conn = sqlite3.connect("repair_system.db")
         cursor = conn.cursor()
         cursor.execute("SELECT id, branch, equipment_type, equipment_detail, detail, image_path, status FROM tickets WHERE reporter = ? ORDER BY id DESC", (st.session_state.name,))
@@ -228,18 +259,31 @@ else:
         
         if rows:
             for row in rows:
-                st.markdown(f"**📌 Ticket #{row[0]}** | สาขา: `{row[1]}` | สถานะ: `{row[6]}`")
-                st.text(f"ประเภท: {row[2]} ({row[3]})\nอาการ: {row[4]}")
+                status_color = "bg-amber-100 text-amber-800" if row[6] == "รอดำเนินการ" else ("bg-blue-100 text-blue-800" if row[6] == "กำลังซ่อม" else "bg-emerald-100 text-emerald-800")
+                st.markdown(f"""
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-slate-800">📌 Ticket #{row[0]}</span>
+                            <span class="text-xs px-3 py-1 rounded-full font-semibold {status_color}">{row[6]}</span>
+                        </div>
+                        <p class="text-sm text-slate-600"><strong>🏢 สาขา:</strong> {row[1]}</p>
+                        <p class="text-sm text-slate-600"><strong>💻 อุปกรณ์:</strong> {row[2]} ({row[3]})</p>
+                        <p class="text-sm text-slate-600 mt-1"><strong>📝 อาการ:</strong> {row[4]}</p>
+                    </div>
+                """, unsafe_allow_html=True)
                 if row[5] and os.path.exists(row[5]):
                     st.image(row[5], caption="รูปภาพหน้างาน", width=250)
-                st.divider()
         else:
             st.info("คุณยังไม่มีประวัติการแจ้งซ่อม")
 
     # --- กรณีที่เป็นช่าง / แอดมิน ---
     elif st.session_state.role == "technician":
-        st.markdown("<h2 style='color: #1e293b;'>🛠️ ระบบจัดการงานซ่อม (สำหรับทีมช่าง / Admin)</h2>", unsafe_allow_html=True)
-        st.divider()
+        st.markdown("""
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">🛠️ ระบบจัดการงานซ่อม (ทีมช่าง)</h2>
+                <p class="text-slate-500">ตรวจสอบและอัปเดตสถานะเคสแจ้งซ่อมทั้งหมดจากทุกสาขา</p>
+            </div>
+        """, unsafe_allow_html=True)
         
         conn = sqlite3.connect("repair_system.db")
         cursor = conn.cursor()
@@ -248,24 +292,35 @@ else:
         conn.close()
         
         if rows:
-            st.subheader(f"📋 รายการแจ้งซ่อมทั้งหมด ({len(rows)} เคส)")
+            st.markdown(f"<p class='font-semibold text-slate-700 mb-4'>📋 รายการแจ้งซ่อมทั้งหมด ({len(rows)} เคส)</p>", unsafe_allow_html=True)
             for row in rows:
                 with st.container():
-                    col1, col2 = st.columns([3, 1])
-                    with col1:
-                        st.markdown(f"**📌 Ticket #{row[0]}** | ผู้แจ้ง: `{row[1]}` | สาขา: `{row[2]}`")
-                        st.text(f"อุปกรณ์: {row[3]} ({row[4]})\nอาการ: {row[5]}")
-                        st.text(f"สถานะปัจจุบัน: {row[7] if len(row) > 7 else row[6]}")
-                        img_col = row[6] if len(row) > 6 else ""
-                        if img_col and os.path.exists(img_col):
-                            st.image(img_col, caption="รูปภาพหน้างาน", width=200)
+                    current_status = row[7] if len(row) > 7 else row[6]
+                    status_color = "bg-amber-100 text-amber-800" if current_status == "รอดำเนินการ" else ("bg-blue-100 text-blue-800" if current_status == "กำลังซ่อม" else "bg-emerald-100 text-emerald-800")
+                    
+                    st.markdown(f"""
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-2">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-slate-800">📌 Ticket #{row[0]} | ผู้แจ้ง: {row[1]}</span>
+                                <span class="text-xs px-3 py-1 rounded-full font-semibold {status_color}">สถานะ: {current_status}</span>
+                            </div>
+                            <p class="text-sm text-slate-600"><strong>🏢 สาขา:</strong> {row[2]}</p>
+                            <p class="text-sm text-slate-600"><strong>💻 อุปกรณ์:</strong> {row[3]} ({row[4]})</p>
+                            <p class="text-sm text-slate-600 mt-1"><strong>📝 อาการ:</strong> {row[5]}</p>
+                        </div>
+                    """, unsafe_allow_html, )
+                    
+                    img_col = row[6] if len(row) > 6 else ""
+                    if img_col and os.path.exists(img_col):
+                        st.image(img_col, caption="รูปภาพหน้างาน", width=200)
+                        
+                    col1, col2 = st.columns([2, 1])
                     with col2:
-                        current_status = row[7] if len(row) > 7 else row[6]
                         status_options = ["รอดำเนินการ", "กำลังซ่อม", "เสร็จสิ้น"]
                         idx = status_options.index(current_status) if current_status in status_options else 0
                         
                         new_status = st.selectbox(f"เปลี่ยนสถานะ #{row[0]}", status_options, index=idx, key=f"status_{row[0]}")
-                        if st.button("อัปเดต", key=f"btn_{row[0]}"):
+                        if st.button("อัปเดตสถานะ", key=f"btn_{row[0]}", use_container_width=True):
                             conn = sqlite3.connect("repair_system.db")
                             cursor = conn.cursor()
                             cursor.execute("UPDATE tickets SET status = ? WHERE id = ?", (new_status, row[0]))
