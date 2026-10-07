@@ -28,8 +28,8 @@ if not os.path.exists("uploads"):
     os.makedirs("uploads")
 
 # --- ตั้งค่า LINE Messaging API ---
-LINE_CHANNEL_ACCESS_TOKEN = "ofPoijMvVBoLRnT8hfl5p7EmJUJtNacpSkJDTK3FeZPQMuHpTjWyXvcfSuwEOyfvlD4dZ83SoiWP642gwLO06kjySJJxbu9Tu5KT6jYM6JXjPzAxa+Jr5mGoq9vwqhOqhdDDf5FN2obie7O8fvKDtQdB04t89/1O/w1cDnyilFU="[cite: 7]
-LINE_TO_TARGET_ID = "U556cf026d1abbb03baa3831f15a5b1ec"[cite: 7]
+LINE_CHANNEL_ACCESS_TOKEN = "ofPoijMvVBoLRnT8hfl5p7EmJUJtNacpSkJDTK3FeZPQMuHpTjWyXvcfSuwEOyfvlD4dZ83SoiWP642gwLO06kjySJJxbu9Tu5KT6jYM6JXjPzAxa+Jr5mGoq9vwqhOqhdDDf5FN2obie7O8fvKDtQdB04t89/1O/w1cDnyilFU="
+LINE_TO_TARGET_ID = "U556cf026d1abbb03baa3831f15a5b1ec"
 
 def send_line_message(message):
     """ฟังก์ชันสำหรับส่งข้อความแจ้งเตือนผ่าน LINE Messaging API"""
